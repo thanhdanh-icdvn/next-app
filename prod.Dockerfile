@@ -1,5 +1,5 @@
 # Stage 1: install dependencies
-FROM node:18-alpine AS deps
+FROM node:lts-alpine AS deps
 WORKDIR /app
 
 ARG NODE_ENV
@@ -15,7 +15,7 @@ RUN \
     fi
 
 # Stage 2: build
-FROM node:18-alpine AS builder
+FROM node:lts-alpine AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY src ./src
@@ -24,12 +24,14 @@ COPY package.json next.config.js tsconfig.json ./
 RUN npm run build
 
 # Stage 3: run
-FROM node:18-alpine
+FROM node:lts-alpine
 WORKDIR /app
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./
+
+USER node
 
 CMD \
     if [ -f yarn.lock ]; then yarn start; \

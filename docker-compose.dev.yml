@@ -16,11 +16,10 @@ services:
     env_file:
       - .env
     volumes:
-      - ./src:/app/src
-      - ./public:/app/public
+      - .:/app
     restart: always
     ports:
-      - 3000:3000
+      - ${PORT:-3000}:${PORT:-3000}
     networks:
       - my_network
   # Add more containers below (nginx, postgres, etc.)
